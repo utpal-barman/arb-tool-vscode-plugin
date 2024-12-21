@@ -1,0 +1,74 @@
+{
+  "name": "arb-manager",
+  "displayName": "Extract Strings to ARB and View ARB Files in Table",
+  "description": "A VSCode plugin to extract strings into ARB files and visualize ARB files in a table.",
+  "version": "1.0.0",
+  "publisher": "utpal.barman",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.extractToArb",
+        "title": "Extract to ARB File"
+      },
+      {
+        "command": "extension.extractToArbFromContextMenu",
+        "title": "Extract String to ARB File",
+        "category": "Refactor"
+      },
+      {
+        "command": "extension.clearArbFolderPath",
+        "title": "Clear ARB Folder Path"
+      },
+      {
+        "command": "extension.visualizeArbFiles",
+        "title": "View ARB Files"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.extractToArbFromContextMenu",
+          "group": "navigation@10"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "extension.visualizeArbFiles",
+          "when": "resourceLangId == jsonc || resourceExtname == .arb",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "extractStringsToArb.arbFolderPath": {
+          "type": "string",
+          "default": "",
+          "description": "The folder path where ARB files are stored."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@types/vscode": "^1.70.0",
+    "typescript": "^4.9.4",
+    "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "csv-stringify": "^6.5.2"
+  }
+}
