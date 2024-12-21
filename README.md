@@ -8,7 +8,16 @@ The **ARB Manager Plugin** helps the management of ARB (Application Resource Bun
 
 ### 1. Extract Hardcoded Strings to ARB Files
 
-- Right-click any hardcoded text in your codebase and select **Extract String to ARB File**.
+- Right-click any hardcoded text in your codebase and select **Extract String to ARB File**. It will replace the hardcoded string with l10n.your_entered_key, define l10n according to your project tech stack in a variable.
+
+For example, in Flutter project if you are using `flutter_localizations` from flutter SDK, you can define—
+
+```dart
+final l10n = AppLocalizations.of(context);
+```
+
+Or you can make a build context extension to make it more cleaner. 😉
+
 - On first use, locate your ARB files in the project folder. Use naming conventions like `app_en.arb` or `en.arb` for automatic locale detection.
 
 <p style="padding: 24px">
