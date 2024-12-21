@@ -2,7 +2,7 @@
   "name": "arb-manager",
   "displayName": "ARB Manager",
   "description": "Extract strings into ARB files and view ARB files in table.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "utpalbarman",
   "icon": "media/icon.png",
   "repository": {
