@@ -3,7 +3,7 @@
   "displayName": "Extract Strings to ARB and View ARB Files in Table",
   "description": "A VSCode plugin to extract strings into ARB files and visualize ARB files in a table.",
   "version": "1.0.0",
-  "publisher": "utpal.barman",
+  "publisher": "utpalbarman",
   "engines": {
     "vscode": "^1.70.0"
   },
