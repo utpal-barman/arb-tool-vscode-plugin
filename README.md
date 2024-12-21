@@ -1,63 +1,87 @@
-# ARB Manager Plugin
+# ARB Manager - VSCode Plugin
 
-## Overview
+_Extract Strings, View ARBs in Table and more..._
 
-The ARB Manager Plugin is a powerful tool designed to simplify the management of ARB (Application Resource Bundle) files. With this plugin, developers can view, edit, and manage translations across multiple ARB files in a single, user-friendly interface.
+The **ARB Manager Plugin** helps the management of ARB (Application Resource Bundle) files, enabling developers to manage ARB files within a simple and intuitive interface.
 
 ## Features
 
-### 1. **View and Edit Translations**
+### 1. Extract Hardcoded Strings to ARB Files
 
-- View all ARB files in a tabular format.
-- Edit translations directly in the table.
+- Right-click any hardcoded text in your codebase and select **Extract String to ARB File**.
+- On first use, locate your ARB files in the project folder. Use naming conventions like `app_en.arb` or `en.arb` for automatic locale detection.
+
+<p style="padding: 24px">
+<img  width = "600" src="screenshots/extract_string_to_arb.png"/>
+</p>
+
+Note: Translation doesn't occur automatically, you have to replace the strings manually follwoing your business requirement, auto translate may lead wrong translate, but we have a plan to add a flag if user wants auto translate in future.
+
+** If you face issues with locating wrong arb folder or later at some point you decided to move ARB files on a different location, use `cmd` + `shift` + `p` and type `Clear ARB Folder Path` and try again to extract string, it will ask you again to select the correct ARB folder location.
+
+### 2. View and Edit Translations
+
+- Display all ARB files in a tabular format.
+- Edit translations directly within the table.
 - Highlight missing translations for easy identification.
 
-### 2. **Add New Translation Keys**
+<p style="padding: 24px">
+<img  width = "600" src="screenshots/arb_editor.png"/>
+</p>
 
-- Add new keys and their translations dynamically.
-- Inputs are validated to ensure key uniqueness.
-- Missing translations are highlighted for better visibility.
+### 3. Add New Translation Keys
 
-### 3. **Import and Export**
+- Add new keys dynamically, ensuring key uniqueness.
+- Missing translations are highlighted automatically.
+
+### 4. Import and Export Translations
 
 - Import translations from a CSV file.
-- Export the current translations to a CSV file for external editing or backup.
+- Export current translations to a CSV file for external editing or backup.
 
 ## Usage
 
-1. **Extracting Strings to ARB files**
-   - Select any hard coded text in your codebase, right click on that text then
+### Prerequisites
 
-2. **Viewing ARB Files**
-   - Install the plugin in your VSCode editor.
-   -
-   - ARB files are displayed as columns in a table, with keys listed in the first column.
+This plugin requires that ARB files are already set up in your project. You can then use ARB keys and classes to render strings on the UI.
 
-3. **Editing Translations**
-   - Click on any cell to edit its content.
-   - Changes are saved automatically when you move to another cell.
+### Steps to Use
 
-4. **Adding New Keys**
-   - Click the `Add Row` button.
-   - Fill in the new key and its corresponding translations.
-   - Click `Save` to add the new row or `Cancel` to discard changes.
+#### 1. Extract Strings to ARB Files
 
-5. **Importing and Exporting**
-   - Use the `Import` button to upload a CSV file containing translations.
-   - Use the `Export` button to download the current translations as a CSV file.
+- Select hardcoded text, right-click, and choose **Extract String to ARB File**.
+- Locate ARB files when prompted on the first use.
+
+#### 2. View ARB Files
+
+- Locate an ARB file in the project explorer.
+- Right-click and select **View ARB File** to open it in a table view.
+
+#### 3. Edit Translations
+
+- Click any table cell to edit its content.
+- Changes save automatically when moving to another cell.
+
+#### 4. Add New Keys
+
+- Click **Add Row** to create a new translation key.
+- Enter the key and translations, then click **Save** to confirm or **Cancel** to discard changes.
+
+#### 5. Import and Export
+
+- Use the **Import** button to upload a CSV file with translations.
+- Use the **Export** button to download current translations as a CSV file.
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome! Follow these steps:
 
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix.
-3. Submit a pull request with a detailed explanation of your changes.
+3. Submit a pull request with a clear explanation of your changes.
+
+> **Note:** Follow [Conventional Commit](https://www.conventionalcommits.org/) guidelines for PR titles and commit messages.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
-
-## Acknowledgments
-
-Thank you to all contributors and users who have supported the development of this tool.
+This project is licensed under the [MIT License](LICENSE).
