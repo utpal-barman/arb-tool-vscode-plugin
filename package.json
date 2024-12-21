@@ -1,9 +1,10 @@
 {
   "name": "arb-manager",
   "displayName": "ARB Manager",
-  "description": "A VSCode plugin to extract strings into ARB files and visualize ARB files in a table.",
-  "version": "1.0.1",
+  "description": "Extract strings into ARB files and view ARB files in table.",
+  "version": "1.0.2",
   "publisher": "utpalbarman",
+  "icon": "media/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/utpal-barman/arb-tool-vscode-plugin"

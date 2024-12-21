@@ -11,7 +11,7 @@ The **ARB Manager Plugin** helps the management of ARB (Application Resource Bun
 - Right-click any hardcoded text in your codebase and select **Extract String to ARB File**. It will replace the hardcoded string with l10n.your_entered_key, define l10n according to your project tech stack in a variable.
 
 <p style="padding: 24px">
-<img  width = "600" src="screenshots/extract_string_to_arb.png"/>
+<img  width = "600" src="https://raw.githubusercontent.com/utpal-barman/arb-tool-vscode-plugin/refs/heads/main/screenshots/extract_string_to_arb.png?token=GHSAT0AAAAAAC34ILPOAPQWNIZ6JNJAS7NIZ3HA5RQ"/>
 </p>
 
 For example, in Flutter project if you are using `flutter_localizations` from flutter SDK, you can define—
@@ -35,7 +35,7 @@ Note: Translation doesn't occur automatically, you have to replace the strings m
 - Highlight missing translations for easy identification.
 
 <p style="padding: 24px">
-<img  width = "600" src="screenshots/arb_editor.png"/>
+<img  width = "600" src="https://raw.githubusercontent.com/utpal-barman/arb-tool-vscode-plugin/refs/heads/main/screenshots/arb_editor.png?token=GHSAT0AAAAAAC34ILPOXUX6MRUOKM5USB7AZ3HA4PQ"/>
 </p>
 
 ### 3. Add New Translation Keys
