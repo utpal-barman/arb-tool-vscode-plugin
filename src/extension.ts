@@ -260,17 +260,65 @@ export function activate(context: vscode.ExtensionContext) {
 
       panel.webview.onDidReceiveMessage(async (message) => {
         switch (message.command) {
-          case 'updateTranslation':
+          case 'updateTranslation': {
             const { key, fileKey, value } = message;
             const arbFilePath = path.join(folderPath, `${fileKey}.arb`);
-            const arbContent = JSON.parse(fs.readFileSync(arbFilePath, 'utf8'));
-            arbContent[key] = value;
-            fs.writeFileSync(
-              arbFilePath,
-              JSON.stringify(arbContent, null, 2),
-              'utf8'
-            );
+
+            try {
+              const arbContent = JSON.parse(
+                fs.readFileSync(arbFilePath, 'utf8')
+              );
+
+              // If the key doesn't exist, add it with a 'MISSING' value
+              if (arbContent[key] === undefined) {
+                arbContent[key] = 'MISSING'; // Default value if missing
+                vscode.window.showInformationMessage(
+                  `Key "${key}" added to ${fileKey}.arb`
+                );
+              }
+
+              // Update the value of the key in the ARB file
+              arbContent[key] = value.trim() || 'MISSING';
+
+              fs.writeFileSync(
+                arbFilePath,
+                JSON.stringify(arbContent, null, 2),
+                'utf8'
+              );
+              vscode.window.showInformationMessage(
+                `Updated ${key} in ${fileKey}.arb`
+              );
+
+              // Refresh the Webview content after update
+              const updatedTranslations: Record<
+                string,
+                Record<string, string>
+              > = {};
+              for (const file of arbFiles) {
+                const fileKey = path.basename(file, '.arb');
+                const filePath = path.join(folderPath, file);
+                const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                for (const key of Object.keys(content)) {
+                  if (!key.startsWith('@')) {
+                    if (!updatedTranslations[key]) {
+                      updatedTranslations[key] = {};
+                    }
+                    updatedTranslations[key][fileKey] = content[key];
+                  }
+                }
+              }
+
+              panel.webview.html = getWebviewContent(
+                updatedTranslations,
+                fileKeys
+              );
+            } catch (error) {
+              vscode.window.showErrorMessage(
+                `Error updating ${fileKey}.arb: ${(error as Error).message}`
+              );
+            }
             break;
+          }
 
           case 'addNewTranslation': {
             const { key: newKey, translations, metadata } = message;
@@ -569,6 +617,22 @@ function getWebviewContent(
                 cancelRowButton.addEventListener('click', () => {
                     newRowFields.classList.add('hidden');
                     defaultButtons.classList.remove('hidden');
+                });
+
+                document.querySelectorAll('td[contenteditable]').forEach(cell => {
+                    cell.addEventListener('blur', (event) => {
+                        const key = event.target.getAttribute('data-key');
+                        const file = event.target.getAttribute('data-file');
+                        const newValue = event.target.innerText.trim();
+
+                        // Send updated value to the extension
+                        vscode.postMessage({
+                            command: 'updateTranslation',
+                            key: key,
+                            fileKey: file,
+                            value: newValue
+                        });
+                    });
                 });
 
                 document.getElementById('export').addEventListener('click', () => {
