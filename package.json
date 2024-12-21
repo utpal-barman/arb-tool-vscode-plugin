@@ -4,6 +4,10 @@
   "description": "A VSCode plugin to extract strings into ARB files and visualize ARB files in a table.",
   "version": "1.0.0",
   "publisher": "utpalbarman",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/utpal-barman/arb-tool-vscode-plugin"
+  },
   "engines": {
     "vscode": "^1.75.0"
   },
