@@ -464,6 +464,218 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(extractToArbCommand);
   context.subscriptions.push(contextMenuCommand);
   context.subscriptions.push(visualizeArbFilesCommand);
+
+  const setupFlutterLocalizations = vscode.commands.registerCommand(
+    'extension.setupFlutterLocalization',
+    async () => {
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      if (!workspaceFolders) {
+        vscode.window.showErrorMessage(
+          'Please open a workspace folder to use this extension.'
+        );
+        return;
+      }
+
+      const rootPath = workspaceFolders[0].uri.fsPath;
+
+      // 1. Add flutter_localizations dependency and generate: true to pubspec.yaml
+      const pubspecPath = path.join(rootPath, 'pubspec.yaml');
+      if (fs.existsSync(pubspecPath)) {
+        let pubspecContent = fs.readFileSync(pubspecPath, 'utf8');
+
+        // Add flutter_localizations if not exists
+        if (!pubspecContent.includes('flutter_localizations')) {
+          pubspecContent = pubspecContent.replace(
+            /dependencies:\s*\n/,
+            'dependencies:\n  flutter_localizations:\n    sdk: flutter\n'
+          );
+          vscode.window.showInformationMessage(
+            'Added flutter_localizations to pubspec.yaml.'
+          );
+        }
+
+        // Add generate: true under the main flutter: section
+        if (!pubspecContent.includes('generate: true')) {
+          // Find the main flutter: section (usually contains assets, fonts, etc.)
+          const flutterSectionMatch = pubspecContent.match(
+            /^flutter:(?:\s*\n(?:\s+.*\n)*)/m
+          );
+
+          if (flutterSectionMatch) {
+            // Get the indentation level of the flutter: section
+            const flutterSection = flutterSectionMatch[0];
+            const indentation = '  '; // Standard YAML indentation
+
+            // Check if the section is empty or only has whitespace
+            if (flutterSection.trim() === 'flutter:') {
+              // If empty, just add generate: true
+              pubspecContent = pubspecContent.replace(
+                /^flutter:\s*$/m,
+                `flutter:\n${indentation}generate: true`
+              );
+            } else {
+              // If not empty, add generate: true as the first item under flutter:
+              pubspecContent = pubspecContent.replace(
+                /^flutter:\s*\n/m,
+                `flutter:\n${indentation}generate: true\n`
+              );
+            }
+
+            vscode.window.showInformationMessage(
+              'Added generate: true to pubspec.yaml under flutter section.'
+            );
+          } else {
+            // If flutter: section doesn't exist, add it
+            pubspecContent += '\nflutter:\n  generate: true\n';
+            vscode.window.showInformationMessage(
+              'Created flutter section with generate: true in pubspec.yaml.'
+            );
+          }
+        }
+
+        fs.writeFileSync(pubspecPath, pubspecContent, 'utf8');
+      } else {
+        vscode.window.showErrorMessage('pubspec.yaml not found.');
+        return;
+      }
+
+      // 2. Create l10n.yaml file
+      const l10nPath = path.join(rootPath, 'l10n.yaml');
+      if (!fs.existsSync(l10nPath)) {
+        const l10nContent = `
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+`;
+        fs.writeFileSync(l10nPath, l10nContent.trim(), 'utf8');
+        vscode.window.showInformationMessage('Created l10n.yaml file.');
+      }
+
+      // 3. Create lib/l10n/app_en.arb file
+      const l10nDir = path.join(rootPath, 'lib', 'l10n');
+      if (!fs.existsSync(l10nDir)) {
+        fs.mkdirSync(l10nDir, { recursive: true });
+      }
+      const arbFilePath = path.join(l10nDir, 'app_en.arb');
+      if (!fs.existsSync(arbFilePath)) {
+        const arbContent = `
+{
+  "@@locale": "en",
+  "hello": "Hello",
+  "@hello": {
+    "type": "text"
+  }
+}`;
+        fs.writeFileSync(arbFilePath, arbContent.trim(), 'utf8');
+        vscode.window.showInformationMessage(
+          'Created app_en.arb file in lib/l10n.'
+        );
+      }
+
+      // 4. Create l10n extension file
+      const extensionDir = path.join(l10nDir, 'extension');
+      if (!fs.existsSync(extensionDir)) {
+        fs.mkdirSync(extensionDir, { recursive: true });
+      }
+
+      const l10nExtensionPath = path.join(
+        extensionDir,
+        'l10n_build_context_extension.dart'
+      );
+      const extensionContent = `
+import 'package:flutter/widgets.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+extension L10nContextExtension on BuildContext {
+  AppLocalizations get localizations => AppLocalizations.of(this)!;
+}`;
+
+      fs.writeFileSync(l10nExtensionPath, extensionContent.trim(), 'utf8');
+      vscode.window.showInformationMessage(
+        'Created l10n BuildContext extension file.'
+      );
+
+      // New function to update MaterialApp configuration
+      await updateMaterialAppConfiguration(rootPath);
+
+      vscode.window.showInformationMessage(
+        'Flutter localization setup completed!'
+      );
+    }
+  );
+
+  async function updateMaterialAppConfiguration(rootPath: string) {
+    try {
+      const libDir = path.join(rootPath, 'lib');
+
+      // Get main.dart or main_*.dart files
+      const mainFiles = fs
+        .readdirSync(libDir)
+        .filter((file) => file === 'main.dart' || file.startsWith('main_'))
+        .map((file) => path.join(libDir, file));
+
+      if (mainFiles.length === 0) {
+        vscode.window.showWarningMessage(
+          'No main.dart or main_*.dart files found in lib directory.'
+        );
+        return;
+      }
+
+      for (const file of mainFiles) {
+        let content = fs.readFileSync(file, 'utf8');
+
+        // Skip if neither MaterialApp nor MaterialApp.router is present
+        if (
+          !content.includes('MaterialApp(') &&
+          !content.includes('MaterialApp.router(')
+        ) {
+          continue;
+        }
+
+        let updatedContent = content;
+        let needsUpdate = false;
+
+        // Regex to find MaterialApp or MaterialApp.router and insert localizationsDelegates after the opening parenthesis
+        const materialAppRegex = /(MaterialApp(?:\.router)?\s*\()/g;
+        updatedContent = updatedContent.replace(materialAppRegex, (match) => {
+          // Only add localizationsDelegates if it's not already present
+          if (!content.includes('localizationsDelegates:')) {
+            needsUpdate = true;
+            return `${match}\n      localizationsDelegates: AppLocalizations.localizationsDelegates,`;
+          }
+          return match;
+        });
+
+        // Add the necessary import if missing
+        const importStatement =
+          "import 'package:flutter_gen/gen_l10n/app_localizations.dart';";
+        if (needsUpdate && !content.includes(importStatement)) {
+          const lastImportIndex = content.lastIndexOf("import '");
+          const endOfLastImport = content.indexOf('\n', lastImportIndex) + 1;
+          updatedContent =
+            updatedContent.slice(0, endOfLastImport) +
+            `${importStatement}\n` +
+            updatedContent.slice(endOfLastImport);
+        }
+
+        // Write the updated content if changes were made
+        if (content !== updatedContent) {
+          fs.writeFileSync(file, updatedContent, 'utf8');
+          vscode.window.showInformationMessage(
+            `Updated MaterialApp configuration in ${path.basename(file)}`
+          );
+        }
+      }
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Error updating MaterialApp configuration: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
+
+  context.subscriptions.push(setupFlutterLocalizations);
 }
 
 function getWebviewContent(

@@ -14,13 +14,25 @@ The **ARB Manager Plugin** helps the management of ARB (Application Resource Bun
 <img  width = "600" src="https://raw.githubusercontent.com/utpal-barman/arb-tool-vscode-plugin/refs/heads/main/screenshots/extract_string_to_arb.png"/>
 </p>
 
-For example, in Flutter project if you are using `flutter_localizations` from flutter SDK, you can define—
+For example, in a Flutter project, if you are using `flutter_localizations` from the Flutter SDK, you can define:
 
 ```dart
 final l10n = AppLocalizations.of(context);
 ```
 
-Or you can make a build context extension to make it more cleaner. 😉
+Or, if you use an extension on `BuildContext`, you can define:
+
+```dart
+final l10n = context.localizations;
+```
+
+### Flutter Guys
+
+By default, if you have a Flutter project and do not have `flutter_localizations` set up, congratulations! With just a simple command, you can set it all up! But before doing so, make sure you're in a Git repository so you can always go back if needed, because this plugin will start writing code for you! 😉
+
+To set it up, just type `Cmd` + `Shift` + `P` (or `Ctrl` + `Shift` + `P` on Windows) and type **"Setup flutter_localization"**. The plugin will suggest the setup for you—just press **Yes**. Boom! You’ll have `flutter_localizations` ready with one `.arb` file. If you want multiple `.arb` files, you can duplicate the `.arb` file, rename it, and make sure to change the `@@locale` language code accordingly.
+
+Alternatively, if you prefer to manually configure it, that's also fine, or maybe you already have it set up.
 
 - On first use, locate your ARB files in the project folder. Use naming conventions like `app_en.arb` or `en.arb` for automatic locale detection.
 

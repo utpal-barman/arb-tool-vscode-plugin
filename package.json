@@ -1,8 +1,8 @@
 {
   "name": "arb-manager",
-  "displayName": "ARB Manager",
+  "displayName": "ARB Manager / Localizations",
   "description": "Extract strings into ARB files and view ARB files in table.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "publisher": "utpalbarman",
   "icon": "media/icon.png",
   "repository": {
@@ -29,11 +29,15 @@
       },
       {
         "command": "extension.clearArbFolderPath",
-        "title": "Clear ARB Folder Path"
+        "title": "ARB Manager: Clear ARB Folder Path"
       },
       {
         "command": "extension.visualizeArbFiles",
-        "title": "View ARB Files"
+        "title": "ARB Manager: View ARB Files"
+      },
+      {
+        "command": "extension.setupFlutterLocalization",
+        "title": "ARB Manager: Setup flutter_localizations for Flutter Project"
       }
     ],
     "menus": {
